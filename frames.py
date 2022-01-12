@@ -21,7 +21,8 @@ def screen_to_camera_coordinates(screen_coordinates, width: int, height: int):
     return [camera_x, camera_y]
 
 
-def world_to_screen_coordinates(world_coordinates, width: int, height: int) -> list:
+def camera_to_screen_coordinates(world_coordinates, width: int, height: int) -> list:
+    """ Can be used as camera to screen coordinates too (I think)"""
 
     min_num = -max_num
 
@@ -59,3 +60,11 @@ def world_to_screen_vector(world_vector, width, height):
     )
 
     return world_vector * transformation_matrix
+
+
+def world_to_screen_coordinates(world_coordinates, settings):
+
+    camera_coord = world_to_camera_coordinates(world_coordinates, settings.camera_origin)
+    screen_coord = camera_to_screen_coordinates(camera_coord, settings.width, settings.height)
+
+    return screen_coord

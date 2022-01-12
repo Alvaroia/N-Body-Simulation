@@ -67,16 +67,15 @@ objects = [body1, body2]
 position_list = []
 
 
-""" Menu """
-start_menu = True
-
+""" pause button """
 start_button = Button((550 - 50/2, 10), 50, 20, (255, 255, 255), (128, 128, 128))
 
 """ Slider """
 slider_init_position = (600, 20)
 slider = Slider(slider_init_position, 25, 100, 10**10, 10**25, (255, 255, 255), 50)
 
-while start_menu:
+while True:
+    # input
     click_pos = pygame.mouse.get_pos()
 
     if start_button.rect.collidepoint(click_pos):
@@ -84,160 +83,33 @@ while start_menu:
     else:
         start_button.hover = False
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    if settings.pause_menu:
+        """ Pause mode"""
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        for event in pygame.event.get():
+            handle_menu_events(event, click_pos, start_button, slider, settings)
 
-            mouse_click_pos = click_pos
+        # update game
+        simulation_results = update_menu_data(click_pos, objects, start_button, slider, settings)
 
-            if start_button.hover:
-                start_menu = False
-            elif slider.rect.collidepoint(mouse_click_pos[0], mouse_click_pos[1]):
-                slider_enabled = True
-            else:
-                pressed = True
+        # Render
+        draw_menu(screen, objects, simulation_results, start_button, slider, settings)
 
-                line_init = mouse_click_pos
+        # To update simulation time with mode change
+        if not settings.pause_menu:
+            settings.t1 = pygame.time.get_ticks()
 
-        if event.type == pygame.MOUSEBUTTONUP:
-            if pressed:
-                # Add new body
-                new_object = new_body_on_click_position(mouse_click_pos, click_pos, slider.value, settings)
-                objects.append(new_object)
+    else:
+        """ Real time simulation"""
 
-                pressed = False
+        for event in pygame.event.get():
+            handle_simulation_events(event, click_pos, start_button, slider, settings)
 
-            slider_enabled = False
+        # update game
+        simulation_results = update_simulation_data(click_pos, objects, start_button, slider, settings)
 
-    # update game
-    if slider_enabled:
-        slider.update_cursor_position(click_pos)
+        # Render
+        draw_simulation(screen, objects, simulation_results, start_button, slider, click_pos, settings)
 
-    # Render
-    screen.fill(settings.screen_color)
-
-    start_button.draw(screen)
-    slider.draw(screen)
-
-    if pressed:
-        #pygame.draw.line(screen, (255, 255, 255), line_init, click_pos)
-
-        # Simulate trajectory of object
-        delta_t = 120  # 1 min
-        n_steps = 1000
-
-        simulate_object = new_body_on_click_position(mouse_click_pos, click_pos, slider.value, settings)
-        objects_test = copy.deepcopy(objects)
-        objects_test.append(simulate_object)
-
-        position_list = update_bodies(objects_test, delta_t, n_steps)
-
-    for idx, obj in enumerate(objects):
-
-        camera_coord = world_to_camera_coordinates(obj.r, settings.camera_origin)
-        screen_coord = world_to_screen_coordinates(camera_coord, width, height)
-
-        radius = max(3, round(math.log(objects[idx].m, 10) / math.log(earth_mass, 10) * 10))
-
-        if width > screen_coord[0] > 0 and height > screen_coord[1] > 0:
-            pygame.draw.circle(screen, (255, 255, 255), screen_coord, radius)
-
-    for idx, obj in enumerate(position_list):
-        pos = position_list[idx][0, :]
-
-        camera_coord = world_to_camera_coordinates(pos, settings.camera_origin)
-        screen_coord = world_to_screen_coordinates(camera_coord, settings.width, settings.height)
-
-        # radius = max(3, round(math.log(slider.value, 10) / math.log(earth_mass, 10) * 10))
-        #
-        # if settings.width > screen_coord[0] > 0 and settings.height > screen_coord[1] > 0:
-        #     pygame.draw.circle(screen, (255, 255, 255), screen_coord, radius)
-
-        for step in range(position_list[idx].shape[0] - 1):
-            pos_t1 = position_list[idx][step]
-            camera_coord_t1 = world_to_camera_coordinates(pos_t1, settings.camera_origin)
-            screen_coord_t1 = world_to_screen_coordinates(camera_coord_t1, settings.width, settings.height)
-
-            pos_t2 = position_list[idx][step + 1]
-            camera_coord_t2 = world_to_camera_coordinates(pos_t2, settings.camera_origin)
-            screen_coord_t2 = world_to_screen_coordinates(camera_coord_t2, settings.width, settings.height)
-
-            pygame.draw.line(screen, (255, 255, 255), screen_coord_t1, screen_coord_t2)
-
-    pygame.display.flip()
-
-
-t1 = pygame.time.get_ticks()
-
-""" Main Loop """
-while True:
-
-    # input
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_click_pos = pygame.mouse.get_pos()
-
-            if slider.rect.collidepoint(mouse_click_pos[0], mouse_click_pos[1]):
-                slider_enabled = True
-            else:
-                # draw line
-                if not pressed:
-                    pressed = True
-
-                    line_init = mouse_click_pos
-
-        if event.type == pygame.MOUSEBUTTONUP:
-
-            if pressed:
-
-                # Add new body
-                click_pos = pygame.mouse.get_pos()
-
-                new_body = new_body_on_click_position(mouse_click_pos, click_pos, slider.value, settings)
-                objects.append(new_body)
-
-                pressed = False
-
-            slider_enabled = False
-
-    # update game
-    t2 = pygame.time.get_ticks()
-    delta_t = (t2 - t1)
-    t1 = t2  # TODO: aqui o tras actualizar los cuerpos?
-
-    position_list = update_bodies(objects, delta_t, 1)
-
-    if slider_enabled:
-        click_pos = pygame.mouse.get_pos()
-        slider.update_cursor_position(click_pos)
-
-    # render
-    screen.fill(settings.screen_color)
-
-    slider.draw(screen)
-
-    if pressed:
-        click_pos = pygame.mouse.get_pos()
-        pygame.draw.line(screen, (255, 255, 255), line_init, click_pos)
-
-    for idx, obj in enumerate(position_list):
-
-        pos = position_list[idx][-1, :]
-
-        camera_coord = world_to_camera_coordinates(pos, settings.camera_origin)
-        screen_coord = world_to_screen_coordinates(camera_coord, width, height)
-
-        radius = max(3, round(math.log(objects[idx].m, 10) / math.log(earth_mass, 10) * 10))
-
-        if width > screen_coord[0] > 0 and height > screen_coord[1] > 0:
-            pygame.draw.circle(screen, (255, 255, 255), screen_coord, radius)
-
-    pygame.display.flip()
 
 

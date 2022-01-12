@@ -24,6 +24,9 @@ class Slider:
                      / self.slider_width * (math.log(self.max_value, 10) - math.log(self.min_value, 10))
                               + math.log(self.min_value, 10))
 
+        # Used to decide when can be used
+        self.enabled = False
+
 
     def update_cursor_position(self, cursor_position):
         x = cursor_position[0]
