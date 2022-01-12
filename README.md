@@ -14,3 +14,7 @@ Features:
   * In real time mode all bodies movement is simulated (new bodies can be also added)
 
 ![Alt Text](https://media3.giphy.com/media/mzO7FhQaNjTkE0wAHx/giphy.gif)
+
+
+
+**Requirements: pygame, numpy**
