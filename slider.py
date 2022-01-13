@@ -12,9 +12,11 @@ class Slider:
         self.max_value = max_value
         self.slider_color = color
         self.default_value = default_value  # %
+
         # Used for hitbox
         self.rect = pygame.Rect(self.slider_init_position[0], self.slider_init_position[1] - self.slider_height/2,
                                 self.slider_width, self.slider_height)
+
         # Representation of current value in slider
         self.cursor = (round(width / 100 * default_value) + self.slider_init_position[0], self.slider_init_position[1])
 
@@ -26,7 +28,6 @@ class Slider:
 
         # Used to decide when can be used
         self.enabled = False
-
 
     def update_cursor_position(self, cursor_position):
         x = cursor_position[0]

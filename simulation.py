@@ -1,17 +1,12 @@
-from body import Body
-from body import update_bodies
-from frames import *
+
 from game_utilities import *
 from slider import Slider
 from button import Button
 from settings import Settings
 
-import math
 import numpy as np
 
-import sys
 import pygame
-import copy
 
 """Pygame parameters"""
 pygame.init()
@@ -31,12 +26,12 @@ settings = Settings(width, height, camera_origin, screen_color)
 
 
 """ Simulation parameters"""
-orbita_geo = 36 * 10**6  # m
-radio_tierra = 6371000  # m
+geostationary_orbit = 36 * 10**6  # m
+earth_radius = 6371000  # m
 earth_mass = 5.972 * 10**24
 
 
-r1 = np.array([0, orbita_geo + radio_tierra])
+r1 = np.array([0, geostationary_orbit + earth_radius])
 v1 = np.array([-3075, 0])
 body1 = Body(100, r1, v1)
 
@@ -47,25 +42,6 @@ body2 = Body(earth_mass, r2, v2)
 
 
 objects = [body1, body2]
-
-
-# T = 1000
-# r1 = np.array([0, 0])
-# v = np.array([0, 0])
-# body1 = Body(10**5, r1, v)
-#
-# r2 = np.array([-T/3, -T/3])
-# r3 = np.array([-2*T/3, -2*T/3])
-# body2 = Body(10**5, r2, v)
-# body3 = Body(10**5, r3, v)
-#
-# objects = [body1, body2, body3]
-
-# objects = []
-
-
-position_list = []
-
 
 """ pause button """
 start_button = Button((550 - 50/2, 10), 50, 20, (255, 255, 255), (128, 128, 128))

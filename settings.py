@@ -23,8 +23,8 @@ class Settings:
 
         # constants
         self.earth_mass = 5.972 * 10 ** 24
-        self.orbita_geo = 36 * 10 ** 6  # m
-        self.radio_tierra = 6371000  # m
+        self.geostationary_orbit = 36 * 10 ** 6  # m
+        self.earth_radius = 6371000  # m
 
 
 

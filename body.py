@@ -67,7 +67,3 @@ def update_bodies(objects: list, delta_t: float, n_steps: int) -> list:
             position_list[k] = np.append(position_list[k], [[objects[k].r[0], objects[k].r[1]]], axis=0)
 
     return position_list
-
-
-def simulate_future_positions(objects, new_body, delta_t: float, n_steps: int):
-    pass
