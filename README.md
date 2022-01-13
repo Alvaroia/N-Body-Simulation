@@ -17,4 +17,5 @@ Features:
 
 
 
-**Requirements: pygame, numpy**
+**Requirements: pygame, numpy.
+The entry point is in Simulation.py**
